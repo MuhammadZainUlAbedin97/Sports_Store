@@ -43,7 +43,21 @@ interface Product {
 	size?: string[];
 }
 
+interface xcategoryOrSize {
+	value: string;
+	label: string;
+}
+
 export default function Page() {
+	const [xcountry, setXcountry] = useState<string[]>([
+		"Germany",
+		"France",
+		"Spain",
+		"Italy",
+		"Brazil",
+	]);
+	const [xsize, setXsize] = useState<xcategoryOrSize[]>([]);
+	const [xcategory, SetXcategory] = useState<xcategoryOrSize[]>([]);
 	const [colorArr, setColorArr] = useState<string[]>([]);
 
 	const addColorBtnClicked = (value: string) => {
@@ -55,6 +69,7 @@ export default function Page() {
 	};
 
 	const enterSameProduct = (country: string) => {
+		setXcountry((prev) => prev.filter((xcntry) => xcntry !== country));
 		let currency = "";
 		switch (country) {
 			case "Brazil":
@@ -70,6 +85,8 @@ export default function Page() {
 			name: "",
 			description: "",
 			price: "",
+			category: xcategory,
+			size: xsize,
 		});
 	};
 
@@ -90,13 +107,18 @@ export default function Page() {
 		});
 	};
 
-	const postProduct = async(finalProduct: Product) => {
-	const res =	await axios.post("http://localhost:3000/api/product",finalProduct,{
-			headers: {
-			  'Content-Type': 'application/json'
-			}})
-	console.log(res)
-	}
+	const postProduct = async (finalProduct: Product) => {
+		const res = await axios.post(
+			"http://localhost:3000/api/product",
+			finalProduct,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		console.log(res);
+	};
 
 	const {
 		control,
@@ -108,9 +130,11 @@ export default function Page() {
 	const onSubmit = (data: any) => {
 		console.log(data);
 		const product = { ...data };
+		SetXcategory(product.category);
 		product.category = product.category.map(
 			(obj: { [key: string]: string }) => obj.value
 		);
+		setXsize(product.size);
 		product.size = product.size.map(
 			(obj: { [key: string]: string }) => obj.value
 		);
@@ -126,7 +150,7 @@ export default function Page() {
 		delete product.image4;
 		if (colorArr.length !== 0) product.color = colorArr;
 		const finalProduct: Product = product;
-		postProduct(finalProduct)
+		postProduct(finalProduct);
 	};
 	console.log(errors);
 
@@ -320,7 +344,7 @@ export default function Page() {
 							<Controller
 								name="color"
 								control={control}
-								defaultValue="123456"
+								defaultValue="#123456"
 								render={({ field: { onChange, value } }) => (
 									<div>
 										<HexColorPicker
@@ -459,36 +483,17 @@ export default function Page() {
 				</div>
 
 				<div className="btn-container">
-					<button
-						onClick={() => enterSameProduct("Germany")}
-						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
-					>
-						Enter for Germany
-					</button>
-					<button
-						onClick={() => enterSameProduct("France")}
-						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
-					>
-						Enter for France
-					</button>
-					<button
-						onClick={() => enterSameProduct("Italy")}
-						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
-					>
-						Enter for Italy
-					</button>
-					<button
-						onClick={() => enterSameProduct("Spain")}
-						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
-					>
-						Enter for Spain
-					</button>
-					<button
-						onClick={() => enterSameProduct("Brazil")}
-						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
-					>
-						Enter for Brazil
-					</button>
+					{xcountry.map((xcntry) => {
+						return (
+							<button
+								key={xcntry}
+								onClick={() => enterSameProduct(`${xcntry}`)}
+								className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
+							>
+								Enter for {xcntry}
+							</button>
+						);
+					})}
 					<button
 						onClick={() => enterNewProduct()}
 						className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow button-effect transition "
