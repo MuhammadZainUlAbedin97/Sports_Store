@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { HexColorPicker, HexColorInput } from "react-colorful";
+import axios from "axios";
 
 const country = [
 	{ value: "others", label: "Others" },
@@ -89,6 +90,14 @@ export default function Page() {
 		});
 	};
 
+	const postProduct = async(finalProduct: Product) => {
+	const res =	await axios.post("http://localhost:3000/api/product",finalProduct,{
+			headers: {
+			  'Content-Type': 'application/json'
+			}})
+	console.log(res)
+	}
+
 	const {
 		control,
 		register,
@@ -117,7 +126,7 @@ export default function Page() {
 		delete product.image4;
 		if (colorArr.length !== 0) product.color = colorArr;
 		const finalProduct: Product = product;
-		console.log(finalProduct);
+		postProduct(finalProduct)
 	};
 	console.log(errors);
 
@@ -174,6 +183,9 @@ export default function Page() {
 								{...register("name", { required: true })}
 								className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
 							/>
+							{errors.name && (
+								<p className="errorMsg">This is a required field.</p>
+							)}
 						</div>
 
 						{/* Description */}
@@ -191,6 +203,9 @@ export default function Page() {
 								{...register("description", { required: true })}
 								className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
 							/>
+							{errors.description && (
+								<p className="errorMsg">This is a required field.</p>
+							)}
 						</div>
 
 						{/* Price */}
@@ -209,6 +224,9 @@ export default function Page() {
 								{...register("price", { required: true })}
 								className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
 							/>
+							{errors.price && (
+								<p className="errorMsg">This is a required field.</p>
+							)}
 						</div>
 					</div>
 
@@ -228,6 +246,9 @@ export default function Page() {
 								{...register("image1", { required: true })}
 								className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
 							/>
+							{errors.image1 && (
+								<p className="errorMsg">Atleast one image is required.</p>
+							)}
 						</div>
 
 						<div className="mb-4">
@@ -368,6 +389,9 @@ export default function Page() {
 									R$
 								</label>
 							</div>
+							{errors.currency && (
+								<p className="errorMsg">This is a required field.</p>
+							)}
 						</div>
 
 						{/* Category */}
@@ -393,7 +417,7 @@ export default function Page() {
 								)}
 							/>
 							{errors.category && (
-								<p className="errorMsg">This is a required field.</p>
+								<p className="errorMsg">Add atleast one catagory.</p>
 							)}
 						</div>
 

@@ -34,7 +34,7 @@ const ProductSchema = new mongoose.Schema(
 			type: [String],
 			required: [true, "Please provide atleast one image...."]
 		},
-		colors: {
+		color: {
 			type: [String],
 			default: ["N/A"]
 		},
