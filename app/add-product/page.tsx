@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { HexColorPicker, HexColorInput } from "react-colorful";
+import toast ,{Toaster} from 'react-hot-toast';
 import axios from "axios";
 
 const country = [
@@ -49,6 +50,7 @@ interface xcategoryOrSize {
 }
 
 export default function Page() {
+	const [disable, setDisable] = useState<boolean>(false)
 	const [xcountry, setXcountry] = useState<string[]>([
 		"Germany",
 		"France",
@@ -57,7 +59,7 @@ export default function Page() {
 		"Brazil",
 	]);
 	const [xsize, setXsize] = useState<xcategoryOrSize[]>([]);
-	const [xcategory, SetXcategory] = useState<xcategoryOrSize[]>([]);
+	const [xcategory, setXcategory] = useState<xcategoryOrSize[]>([]);
 	const [colorArr, setColorArr] = useState<string[]>([]);
 
 	const addColorBtnClicked = (value: string) => {
@@ -91,12 +93,19 @@ export default function Page() {
 	};
 
 	const enterNewProduct = () => {
+		setXcountry([
+			"Germany",
+			"France",
+			"Spain",
+			"Italy",
+			"Brazil",
+		])
 		setColorArr([]);
 		reset({
 			name: "",
 			description: "",
 			price: "",
-			currency: "",
+			currency: "$",
 			country: { value: "others", label: "Others" },
 			image1: "",
 			image2: "",
@@ -108,7 +117,7 @@ export default function Page() {
 	};
 
 	const postProduct = async (finalProduct: Product) => {
-		const res = await axios.post(
+		await axios.post(
 			"http://localhost:3000/api/product",
 			finalProduct,
 			{
@@ -116,8 +125,13 @@ export default function Page() {
 					"Content-Type": "application/json",
 				},
 			}
-		);
-		console.log(res);
+		).then((res)=>{
+			console.log(res)
+		}).catch((err)=>{
+			console.log(err)
+		}).finally(()=>{
+			setDisable((prev)=>!prev)
+		})
 	};
 
 	const {
@@ -128,9 +142,10 @@ export default function Page() {
 		formState: { errors },
 	} = useForm();
 	const onSubmit = (data: any) => {
+		setDisable((prev)=>!prev)
 		console.log(data);
 		const product = { ...data };
-		SetXcategory(product.category);
+		setXcategory(product.category);
 		product.category = product.category.map(
 			(obj: { [key: string]: string }) => obj.value
 		);
@@ -150,7 +165,12 @@ export default function Page() {
 		delete product.image4;
 		if (colorArr.length !== 0) product.color = colorArr;
 		const finalProduct: Product = product;
-		postProduct(finalProduct);
+		const myPromise = postProduct(finalProduct);
+		toast.promise(myPromise, {
+			loading: 'Adding Product...',
+			success: 'Product Added...',
+			error: 'Error adding Product...',
+		  });
 	};
 	console.log(errors);
 
@@ -160,6 +180,7 @@ export default function Page() {
 
 	return (
 		<div className="container mx-auto p-4">
+			<Toaster/>
 			<form
 				onSubmit={handleSubmit(onSubmit)}
 				className="bg-gray-300 p-8 rounded-lg shadow-md mx-auto"
@@ -478,7 +499,8 @@ export default function Page() {
 					<input
 						type="submit"
 						value="Submit"
-						className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+						disabled={disable}
+						className={disable?"bg-blue-300 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded cursor-wait":"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"}
 					/>
 				</div>
 

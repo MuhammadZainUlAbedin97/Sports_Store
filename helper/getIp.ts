@@ -1,8 +1,8 @@
 export async function getIp() {
 	let ip = "";
-	await fetch("https://api64.ipify.org/?format=json")
+	await fetch("https://api64.ipify.org/?format=json",{ cache: 'no-store' })
 		.then((res) => res.json())
 		.then((data) => (ip = data.ip));
-
+	console.log(ip)
 	return ip;
 }
