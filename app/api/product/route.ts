@@ -1,6 +1,5 @@
 import { connectDB } from "@/db/connect";
 import { Product } from "@/models/Product";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: Request) {
 	const req = await request.json();
@@ -9,9 +8,9 @@ export async function POST(request: Request) {
 	return Response.json({ product });
 }
 
-export async function GET(request: NextRequest) {
-	const country = request.headers.get("country");
-	console.log(country)
+export async function GET(request: Request) {
+	const {searchParams} = new URL(request.url)
+	const country = searchParams.get("country")
 	let searchCountry = ""
 	const definedCountry = ["Germany", "Spain", "France", "Italy", "Brazil"]
 	const isDefinedCountry = country && definedCountry.includes(country)
@@ -20,8 +19,8 @@ export async function GET(request: NextRequest) {
 	}else{
 		searchCountry = "others"
 	}
-	console.log(searchCountry);
 	await connectDB();
+	console.log(searchCountry, "route")
 	const products = await Product.find({country: searchCountry});
 	return Response.json({ products });
 }

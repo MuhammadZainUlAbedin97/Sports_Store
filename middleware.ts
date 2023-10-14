@@ -9,6 +9,8 @@ export async function middleware(request: NextRequest) {
 
 	newHeaders.set("country", country);
 
+	console.log("middleware")
+
 	return NextResponse.next({
 		request: {
 			headers: newHeaders,
@@ -17,5 +19,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: "/api/product/:path",
+	matcher: "/api/product/hello/world",
 };
