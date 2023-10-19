@@ -20,7 +20,6 @@ export async function GET(request: Request) {
 		searchCountry = "others"
 	}
 	await connectDB();
-	console.log(searchCountry, "route")
 	const products = await Product.find({country: searchCountry});
 	return Response.json({ products });
 }
