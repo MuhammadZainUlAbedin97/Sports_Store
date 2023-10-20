@@ -6,6 +6,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Search() {
   const router = useRouter();
+
+  if (!router) {
+    return null; // or render some loading or error message
+  }
+
   const searchParams = useSearchParams();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
